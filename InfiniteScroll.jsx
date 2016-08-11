@@ -44,7 +44,8 @@ class InfiniteScroll extends React.Component {
 
     style() {
         return {
-            height: this.props.height
+            height: this.props.height,
+            overFlowY: 'auto'
         }
     }
 
@@ -68,7 +69,7 @@ class InfiniteScroll extends React.Component {
 
 InfiniteScroll.defaultProps = {
     hasMore: true,
-    height: 'auto'
+    height: '100%'
 };
 
 InfiniteScroll.propType = {
