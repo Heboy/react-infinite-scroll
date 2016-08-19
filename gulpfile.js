@@ -17,3 +17,8 @@ gulp.task('react', function () {
         .pipe(babel())
         .pipe(gulp.dest(path + 'dist'))
 });
+
+gulp.task('default', function () {
+    gulp.run('scss');
+    gulp.run('react');
+});

@@ -69,7 +69,8 @@ class InfiniteScroll extends React.Component {
 
 InfiniteScroll.defaultProps = {
     hasMore: true,
-    height: '100%'
+    height: '100%',
+    className: ''
 };
 
 InfiniteScroll.propType = {
