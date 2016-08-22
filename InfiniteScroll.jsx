@@ -9,7 +9,7 @@ class InfiniteScroll extends React.Component {
         super(props);
         this.state = {
             loadCompleted: false,
-            text: '',
+            errorMsg: '',
             startLoad: false//首次加载时不显示inline loading
         }
     }
@@ -28,18 +28,20 @@ class InfiniteScroll extends React.Component {
                     loadCompleted: false,
                     startLoad: true
                 });
-                this.props.onLoad()
-                    .then(()=> {
-                        this.setState({
-                            loadCompleted: true
+                let result = this.props.onLoad();
+                if (result instanceof Promise) {
+                    result.then(()=> {
+                            this.setState({
+                                loadCompleted: true
+                            })
                         })
-                    })
-                    .catch((errorMsg)=> {
-                        this.setState({
-                            loadCompleted: true,
-                            text: errorMsg
-                        })
-                    });
+                        .catch((errorMsg)=> {
+                            this.setState({
+                                loadCompleted: true,
+                                errorMsg: errorMsg
+                            })
+                        });
+                }
             }
         });
     }
@@ -52,12 +54,16 @@ class InfiniteScroll extends React.Component {
     }
 
     render() {
+        console.log('render');
         return (
             <ul ref="list" className={this.props.className+' infinite-scroll'} style={this.style()}>
                 {this.props.children}
                 {(()=> {
                     if (this.state.startLoad === false) {
                         return null;
+                    }
+                    if (this.state.errorMsg.length > 0) {
+                        return <InlineLoading hasMore={false} text={this.state.errorMsg} retry={this.retry.bind(this)}/>
                     }
                     if (this.props.hasMore === true && this.state.loadCompleted === false) {
                         return <InlineLoading hasMore={true}/>
@@ -67,12 +73,26 @@ class InfiniteScroll extends React.Component {
             </ul>
         )
     }
+
+    retry() {
+        this.setState({
+            hasMore: true,
+            loadCompleted: false,
+            errorMsg: ''
+        });
+        if (this.props.retry) {
+            this.props.retry();
+        }
+    }
 }
 
 InfiniteScroll.defaultProps = {
     hasMore: true,
     height: '100%',
-    className: ''
+    className: '',
+    onLoad: ()=> {
+        console.log('需要重写onLoad方法')
+    }
 };
 
 InfiniteScroll.propType = {
@@ -81,7 +101,9 @@ InfiniteScroll.propType = {
     height: React.PropTypes.string,
     className: React.PropTypes.string,
     //加载更多
-    onLoad: React.PropTypes.func
+    onLoad: React.PropTypes.func,
+    //失败后的点击重试方法
+    retry: React.PropTypes.func
 };
 
 module.exports = InfiniteScroll;

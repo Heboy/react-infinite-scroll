@@ -7,19 +7,6 @@ import InfiniteScroll from '../dist/InfiniteScroll';
 
 class Item extends React.Component {
 
-    shouldComponentUpdate() {
-        console.log('update');
-        return false;
-    }
-
-    componentDidMount() {
-        console.log('did mount');
-    }
-
-    componentWillUnmount() {
-        console.log('did unmount');
-    }
-
     render() {
         return (
             <p>{this.props.text}</p>
@@ -41,22 +28,9 @@ class App extends React.Component {
         }
     }
 
-    shouldComponentUpdate() {
-        console.log('updateA');
-        return true;
-    }
-
-    componentDidMount() {
-        console.log('did mountA')
-    }
-
-    componentWillUnmount() {
-        console.log('did unmountA')
-    }
-
     render() {
         return (
-            <InfiniteScroll onLoad={this.loadMore.bind(this)} hasMore={true} height="100%">
+            <InfiniteScroll onLoad={this.loadMore.bind(this)} hasMore={true} height="100%" retry={this.retry.bind(this)}>
                 {(()=> {
                     return this.state.items.map((item)=> {
                         return <Item text={item}/>
@@ -68,14 +42,31 @@ class App extends React.Component {
 
     loadMore() {
         var num = 10;
-        var arr = []
-        for (var i = 0; i < num; i++) {
-            arr.push(Math.random());
-        }
-        this.setState({
-            items: this.state.items.concat(arr)
+        return new Promise((resolve, reject)=> {
+            var arr = [];
+            for (var i = 0; i < num; i++) {
+                arr.push(Math.random());
+            }
+            setTimeout(()=>{
+                reject('请求超时')
+            },3000)
         });
-        //需要返回promise对象
+    }
+
+    retry(){
+        var num = 10;
+        return new Promise((resolve, reject)=> {
+            var arr = [];
+            for (var i = 0; i < num; i++) {
+                arr.push(Math.random());
+            }
+            setTimeout(()=>{
+                this.setState({
+                    items: this.state.items.concat(arr)
+                });
+                resolve();
+            },2000)
+        });
     }
 
 }

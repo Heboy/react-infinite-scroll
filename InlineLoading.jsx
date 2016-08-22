@@ -28,7 +28,7 @@ class InlineLoading extends React.Component {
                         )
                     }
                 })()}
-                <span className="text">
+                <span className="text" onClick={this.props.retry}>
                     {this.props.text}
                 </span>
             </div>
@@ -43,6 +43,7 @@ InlineLoading.defaultProps = {
 
 InlineLoading.propType = {
     hasMore: React.PropTypes.bool,
+    retry: React.PropTypes.func,
     text: React.PropTypes.string
 };
 
