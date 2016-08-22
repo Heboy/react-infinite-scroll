@@ -2,11 +2,16 @@ var gulp = require('gulp');
 var sass = require('gulp-sass');
 var babel = require('gulp-babel');
 var react = require('gulp-react');
+var autoprefixer = require('gulp-autoprefixer');
 
 gulp.task('scss', function () {
     var path = './';
     return gulp.src(path + '*.scss')
         .pipe(sass())
+        .pipe(autoprefixer({
+            browsers: ['iOS >= 7', 'Android >= 4.0'],
+            remove: false
+        }))
         .pipe(gulp.dest(path + 'dist'))
 });
 

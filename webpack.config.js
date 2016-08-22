@@ -2,6 +2,7 @@
  * Created by Soup Tang on 2015/8/26.
  */
 var webpack = require('webpack');
+var autoprefixer = require('autoprefixer');
 
 module.exports = {
     entry: {
@@ -20,6 +21,12 @@ module.exports = {
             {test: /\.(scss|css)$/, loader: "style!css!sass"}
         ]
     },
+    postcss: [
+        autoprefixer({
+            browsers: ['iOS >= 7', 'Android >= 4.0'],
+            remove: false
+        })
+    ],
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({
             names: ['vendor']

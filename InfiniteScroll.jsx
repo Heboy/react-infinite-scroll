@@ -9,6 +9,7 @@ class InfiniteScroll extends React.Component {
         super(props);
         this.state = {
             loadCompleted: false,
+            text: '',
             startLoad: false//首次加载时不显示inline loading
         }
     }
@@ -35,7 +36,8 @@ class InfiniteScroll extends React.Component {
                     })
                     .catch((errorMsg)=> {
                         this.setState({
-                            loadCompleted: true
+                            loadCompleted: true,
+                            text: errorMsg
                         })
                     });
             }
