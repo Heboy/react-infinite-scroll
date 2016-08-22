@@ -19,7 +19,8 @@ class InfiniteScroll extends React.Component {
             let clientHeight = e.target.clientHeight;
             let scrollHeight = e.target.scrollHeight;
             let scrollTop = e.target.scrollTop;
-            if (scrollHeight - clientHeight == scrollTop && this.props.hasMore === true) {
+            //误差0.04以内
+            if ((scrollHeight - clientHeight) / scrollTop <= 1.04 && this.props.hasMore === true) {
                 if (!this.props.onLoad) {
                     throw new Error('need onLoad');
                 }
