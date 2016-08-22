@@ -1,6 +1,6 @@
 {
   "name": "infinite-scroll",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "main": "dist/InfiniteScroll.js",
   "author": "Heboy",
   "dependencies": {

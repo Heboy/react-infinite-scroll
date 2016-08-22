@@ -38,7 +38,7 @@ class InfiniteScroll extends React.Component {
                         .catch((errorMsg)=> {
                             this.setState({
                                 loadCompleted: true,
-                                errorMsg: errorMsg
+                                errorMsg: errorMsg.message
                             })
                         });
                 }
