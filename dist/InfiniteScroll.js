@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import InlineLoading from './InlineLoading';
+import shallowCompare from 'react-addons-shallow-compare';
 
 class InfiniteScroll extends React.Component {
     constructor(props) {
@@ -14,36 +15,8 @@ class InfiniteScroll extends React.Component {
         };
     }
 
-    componentDidMount() {
-        this.refs.list.addEventListener('scroll', e => {
-            let clientHeight = e.target.clientHeight;
-            let scrollHeight = e.target.scrollHeight;
-            let scrollTop = e.target.scrollTop;
-            //误差0.04以内
-            if ((scrollHeight - clientHeight) / scrollTop <= 1.04 && this.props.hasMore === true) {
-                if (!this.props.onLoad) {
-                    throw new Error('need onLoad');
-                }
-                //onLoad返回Promise对象
-                this.setState({
-                    loadCompleted: false,
-                    startLoad: true
-                });
-                let result = this.props.onLoad();
-                if (result instanceof Promise) {
-                    result.then(() => {
-                        this.setState({
-                            loadCompleted: true
-                        });
-                    }).catch(errorMsg => {
-                        this.setState({
-                            loadCompleted: true,
-                            errorMsg: errorMsg.message
-                        });
-                    });
-                }
-            }
-        });
+    shouldComponentUpdate(nextProps, nextState) {
+        return shallowCompare(this, nextProps, nextState);
     }
 
     style() {
@@ -54,8 +27,9 @@ class InfiniteScroll extends React.Component {
     }
 
     render() {
-        console.log('render');
-        return React.createElement("ul", { ref: "list", className: this.props.className + ' infinite-scroll', style: this.style() }, this.props.children, (() => {
+        return React.createElement("ul", { onScroll: this.scrollHandle.bind(this),
+            className: this.props.className + ' infinite-scroll',
+            style: this.style() }, this.props.children, (() => {
             if (this.state.startLoad === false) {
                 return null;
             }
@@ -67,6 +41,36 @@ class InfiniteScroll extends React.Component {
             }
             return React.createElement(InlineLoading, { hasMore: false, text: "没有更多了..." });
         })());
+    }
+
+    scrollHandle(e) {
+        let clientHeight = e.target.clientHeight;
+        let scrollHeight = e.target.scrollHeight;
+        let scrollTop = e.target.scrollTop;
+        //误差0.05以内
+        if ((scrollHeight - clientHeight) / scrollTop <= 1.05 && this.props.hasMore === true) {
+            if (!this.props.onLoad) {
+                throw new Error('need onLoad');
+            }
+            //onLoad返回Promise对象
+            this.setState({
+                loadCompleted: false,
+                startLoad: true
+            });
+            let result = this.props.onLoad();
+            if (result instanceof Promise) {
+                result.then(() => {
+                    this.setState({
+                        loadCompleted: true
+                    });
+                }).catch(errorMsg => {
+                    this.setState({
+                        loadCompleted: true,
+                        errorMsg: errorMsg.message
+                    });
+                });
+            }
+        }
     }
 
     retry() {
