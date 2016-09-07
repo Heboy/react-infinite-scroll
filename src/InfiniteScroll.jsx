@@ -12,7 +12,8 @@ class InfiniteScroll extends React.Component {
             loadCompleted: false,
             errorMsg: '',
             startLoad: false//首次加载时不显示inline loading
-        }
+        };
+        this.onLoading = false;
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -35,15 +36,15 @@ class InfiniteScroll extends React.Component {
                 {(()=> {
                     if (this.state.startLoad === false) {
                         return null;
-                    }
+                        }
                     if (this.state.errorMsg.length > 0) {
                         return <InlineLoading hasMore={false} text={this.state.errorMsg} retry={this.retry.bind(this)}/>
-                    }
+                        }
                     if (this.props.hasMore === true && this.state.loadCompleted === false) {
                         return <InlineLoading hasMore={true}/>
-                    }
+                        }
                     return <InlineLoading hasMore={false} text="没有更多了..."/>
-                })()}
+                    })()}
             </ul>
         )
     }
@@ -53,40 +54,60 @@ class InfiniteScroll extends React.Component {
         let scrollHeight = e.target.scrollHeight;
         let scrollTop = e.target.scrollTop;
         //误差0.05以内
-        if ((scrollHeight - clientHeight) / scrollTop <= 1.05 && this.props.hasMore === true) {
+        if ((scrollHeight - clientHeight) / scrollTop <= 1.05 && this.props.hasMore === true && this.onLoading === false) {
+            this.onLoading = true;//加载中状态，避免重复出发onLoad
             if (!this.props.onLoad) {
                 throw new Error('need onLoad')
             }
             //onLoad返回Promise对象
+            let result = this.props.onLoad();
             this.setState({
                 loadCompleted: false,
                 startLoad: true
             });
-            let result = this.props.onLoad();
             if (result instanceof Promise) {
                 result.then(()=> {
                         this.setState({
                             loadCompleted: true
-                        })
+                        });
+                        this.onLoading = false;
                     })
                     .catch((errorMsg)=> {
                         this.setState({
                             loadCompleted: true,
                             errorMsg: errorMsg.message
-                        })
+                        });
                     });
             }
         }
     }
 
     retry() {
-        this.setState({
-            hasMore: true,
-            loadCompleted: false,
-            errorMsg: ''
-        });
         if (this.props.retry) {
-            this.props.retry();
+            this.onLoading = true;
+            let result = this.props.retry();
+            this.setState({
+                hasMore: true,
+                loadCompleted: false,
+                errorMsg: ''
+            });
+            if (result instanceof Promise) {
+                result.then(()=> {
+                        this.setState({
+                            loadCompleted: true
+                        });
+                        this.onLoading = false;
+                    })
+                    .catch((errorMsg)=> {
+                        this.setState({
+                            loadCompleted: true,
+                            errorMsg: errorMsg.message
+                        });
+                    });
+            }
+        }
+        else {
+            throw new Error('no retry props');
         }
     }
 }
