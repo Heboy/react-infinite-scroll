@@ -4,26 +4,28 @@ var babel = require('gulp-babel');
 var react = require('gulp-react');
 var autoprefixer = require('gulp-autoprefixer');
 
+
+
 gulp.task('scss', function () {
-    var path = './';
-    return gulp.src(path + '*.scss')
+    gulp.src('src/scss/*.scss')
         .pipe(sass())
         .pipe(autoprefixer({
             browsers: ['iOS >= 7', 'Android >= 4.0'],
             remove: false
         }))
-        .pipe(gulp.dest(path + 'dist'))
+        .pipe(gulp.dest('dist'))
 });
+
+
 
 gulp.task('react', function () {
-    var path = './';
-    return gulp.src(path + '*.jsx')
-        .pipe(react({harmony: false, es6module: true}))
-        .pipe(babel())
-        .pipe(gulp.dest(path + 'dist'))
+    return gulp.src('src/*.jsx')
+        // .pipe(react({harmony: false, es6module: true}))
+        .pipe(babel({
+            presets: ['es2015', 'react']
+        }))
+        .pipe(gulp.dest('dist'))
 });
 
-gulp.task('default', function () {
-    gulp.run('scss');
-    gulp.run('react');
-});
+
+gulp.task('default', ['scss', 'react']);
