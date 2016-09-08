@@ -30,35 +30,30 @@ class App extends React.Component {
 
     render() {
         return (
-            <InfiniteScroll onLoad={this.loadMore.bind(this)} hasMore={true} height="100%"
+            <InfiniteScroll onLoad={this.loadMore.bind(this)}
+                            hasMore={true}
                             retry={this.retry.bind(this)}>
                 {(()=> {
-                    return this.state.items.map((item)=> {
-                        return <Item text={item}/>
-                    })
-                })()}
+                    return this.state.items.map((item,index)=> {
+                        return <Item text={item} key={index}/>
+                        })
+                    })()}
             </InfiniteScroll>
         )
     }
 
     loadMore() {
+        console.log('666')
         var num = 10;
-        return fetch('http://ciqapi.iweibang.com/pushAction/msg-center/sys-msg-list?page=0')
-            .then((response)=> {
-                throw new Error('请求超时')
-            })
-            .catch((err)=> {
-                throw new Error('请求超时')
-            })
-        //return new Promise((resolve, reject)=> {
-        //    var arr = [];
-        //    for (var i = 0; i < num; i++) {
-        //        arr.push(Math.random());
-        //    }
-        //    setTimeout(()=>{
-        //        reject('请求超时')
-        //    },3000)
-        //});
+        return new Promise((resolve, reject)=> {
+            var arr = [];
+            for (var i = 0; i < num; i++) {
+                arr.push(Math.random());
+            }
+            setTimeout(()=> {
+                reject(new Error('请求超时,点击重试'));
+            }, 3000)
+        });
     }
 
     retry() {

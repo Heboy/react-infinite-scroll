@@ -38,6 +38,7 @@ var InfiniteScroll = function (_React$Component) {
             errorMsg: '',
             startLoad: false //首次加载时不显示inline loading
         };
+        _this.onLoading = false;
         return _this;
     }
 
@@ -88,21 +89,23 @@ var InfiniteScroll = function (_React$Component) {
             var scrollHeight = e.target.scrollHeight;
             var scrollTop = e.target.scrollTop;
             //误差0.05以内
-            if ((scrollHeight - clientHeight) / scrollTop <= 1.05 && this.props.hasMore === true) {
+            if ((scrollHeight - clientHeight) / scrollTop <= 1.05 && this.props.hasMore === true && this.onLoading === false) {
+                this.onLoading = true; //加载中状态，避免重复出发onLoad
                 if (!this.props.onLoad) {
                     throw new Error('need onLoad');
                 }
                 //onLoad返回Promise对象
+                var result = this.props.onLoad();
                 this.setState({
                     loadCompleted: false,
                     startLoad: true
                 });
-                var result = this.props.onLoad();
                 if (result instanceof Promise) {
                     result.then(function () {
                         _this3.setState({
                             loadCompleted: true
                         });
+                        _this3.onLoading = false;
                     }).catch(function (errorMsg) {
                         _this3.setState({
                             loadCompleted: true,
@@ -115,13 +118,31 @@ var InfiniteScroll = function (_React$Component) {
     }, {
         key: 'retry',
         value: function retry() {
-            this.setState({
-                hasMore: true,
-                loadCompleted: false,
-                errorMsg: ''
-            });
+            var _this4 = this;
+
             if (this.props.retry) {
-                this.props.retry();
+                this.onLoading = true;
+                var result = this.props.retry();
+                this.setState({
+                    hasMore: true,
+                    loadCompleted: false,
+                    errorMsg: ''
+                });
+                if (result instanceof Promise) {
+                    result.then(function () {
+                        _this4.setState({
+                            loadCompleted: true
+                        });
+                        _this4.onLoading = false;
+                    }).catch(function (errorMsg) {
+                        _this4.setState({
+                            loadCompleted: true,
+                            errorMsg: errorMsg.message
+                        });
+                    });
+                }
+            } else {
+                throw new Error('no retry props');
             }
         }
     }]);
