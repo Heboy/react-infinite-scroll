@@ -20,18 +20,15 @@ class InfiniteScroll extends React.Component {
         return shallowCompare(this, nextProps, nextState);
     }
 
-    style() {
-        return {
-            height: this.props.height,
-            overFlowY: 'auto'
-        }
-    }
-
     render() {
+
+        const { height, langNoMore, langLoading } = this.props;
+
         return (
             <ul onScroll={this.scrollHandle.bind(this)}
-                className={this.props.className+' infinite-scroll'}
-                style={this.style()}>
+                    className={this.props.className+' infinite-scroll'}
+                    style={{height: height, overFlowY: "auto"}}>
+
                 {this.props.children}
                 {(()=> {
                     if (this.state.startLoad === false) {
@@ -41,9 +38,9 @@ class InfiniteScroll extends React.Component {
                         return <InlineLoading hasMore={false} text={this.state.errorMsg} retry={this.retry.bind(this)}/>
                         }
                     if (this.props.hasMore === true && this.state.loadCompleted === false) {
-                        return <InlineLoading hasMore={true}/>
+                        return <InlineLoading hasMore={true} text={langLoading} />
                         }
-                    return <InlineLoading hasMore={false} text="没有更多了..."/>
+                    return <InlineLoading hasMore={false} text={langNoMore} />
                     })()}
             </ul>
         )
@@ -116,20 +113,21 @@ InfiniteScroll.defaultProps = {
     hasMore: true,
     height: '100%',
     className: '',
+    langNoMore: '没有更多了...',
+    langLoading: '加载中...',
     onLoad: ()=> {
-        console.log('需要重写onLoad方法')
+        console.log('Need rewrite onLoad method')
     }
 };
 
 InfiniteScroll.propType = {
     hasMore: React.PropTypes.bool,
-    //显示设置高度以便产生滚动事件
-    height: React.PropTypes.string,
+    height: React.PropTypes.string,   //显示设置高度以便产生滚动事件
     className: React.PropTypes.string,
-    //加载更多
-    onLoad: React.PropTypes.func,
-    //失败后的点击重试方法
-    retry: React.PropTypes.func
+    onLoad: React.PropTypes.func, //加载更多
+    retry: React.PropTypes.func,   //失败后的点击重试方法
+    langNoMore: React.PropTypes.string,
+    langLoading: React.PropTypes.string,
 };
 
-module.exports = InfiniteScroll;
+export default InfiniteScroll;

@@ -47,4 +47,4 @@ InlineLoading.propType = {
     text: React.PropTypes.string
 };
 
-module.exports = InlineLoading;
+export default InlineLoading;

@@ -1,5 +1,9 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require('react');
@@ -48,23 +52,21 @@ var InfiniteScroll = function (_React$Component) {
             return (0, _reactAddonsShallowCompare2.default)(this, nextProps, nextState);
         }
     }, {
-        key: 'style',
-        value: function style() {
-            return {
-                height: this.props.height,
-                overFlowY: 'auto'
-            };
-        }
-    }, {
         key: 'render',
         value: function render() {
             var _this2 = this;
+
+            var _props = this.props;
+            var height = _props.height;
+            var langNoMore = _props.langNoMore;
+            var langLoading = _props.langLoading;
+
 
             return _react2.default.createElement(
                 'ul',
                 { onScroll: this.scrollHandle.bind(this),
                     className: this.props.className + ' infinite-scroll',
-                    style: this.style() },
+                    style: { height: height, overFlowY: "auto" } },
                 this.props.children,
                 function () {
                     if (_this2.state.startLoad === false) {
@@ -74,9 +76,9 @@ var InfiniteScroll = function (_React$Component) {
                         return _react2.default.createElement(_InlineLoading2.default, { hasMore: false, text: _this2.state.errorMsg, retry: _this2.retry.bind(_this2) });
                     }
                     if (_this2.props.hasMore === true && _this2.state.loadCompleted === false) {
-                        return _react2.default.createElement(_InlineLoading2.default, { hasMore: true });
+                        return _react2.default.createElement(_InlineLoading2.default, { hasMore: true, text: langLoading });
                     }
-                    return _react2.default.createElement(_InlineLoading2.default, { hasMore: false, text: '没有更多了...' });
+                    return _react2.default.createElement(_InlineLoading2.default, { hasMore: false, text: langNoMore });
                 }()
             );
         }
@@ -154,20 +156,21 @@ InfiniteScroll.defaultProps = {
     hasMore: true,
     height: '100%',
     className: '',
+    langNoMore: '没有更多了...',
+    langLoading: '加载中...',
     onLoad: function onLoad() {
-        console.log('需要重写onLoad方法');
+        console.log('Need rewrite onLoad method');
     }
 };
 
 InfiniteScroll.propType = {
     hasMore: _react2.default.PropTypes.bool,
-    //显示设置高度以便产生滚动事件
-    height: _react2.default.PropTypes.string,
+    height: _react2.default.PropTypes.string, //显示设置高度以便产生滚动事件
     className: _react2.default.PropTypes.string,
-    //加载更多
-    onLoad: _react2.default.PropTypes.func,
-    //失败后的点击重试方法
-    retry: _react2.default.PropTypes.func
+    onLoad: _react2.default.PropTypes.func, //加载更多
+    retry: _react2.default.PropTypes.func, //失败后的点击重试方法
+    langNoMore: _react2.default.PropTypes.string,
+    langLoading: _react2.default.PropTypes.string
 };
 
-module.exports = InfiniteScroll;
+exports.default = InfiniteScroll;
