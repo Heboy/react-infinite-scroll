@@ -1,7 +1,6 @@
 var gulp = require('gulp');
 var sass = require('gulp-sass');
 var babel = require('gulp-babel');
-var react = require('gulp-react');
 var autoprefixer = require('gulp-autoprefixer');
 
 
