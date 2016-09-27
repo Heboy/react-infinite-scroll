@@ -62,7 +62,7 @@ class InfiniteScroll extends React.Component {
                 loadCompleted: false,
                 startLoad: true
             });
-            if (result instanceof Promise) {
+            if (typeof result.then === 'function') {
                 result.then(()=> {
                         this.setState({
                             loadCompleted: true
@@ -88,7 +88,7 @@ class InfiniteScroll extends React.Component {
                 loadCompleted: false,
                 errorMsg: ''
             });
-            if (result instanceof Promise) {
+            if (typeof result.then === 'function') {
                 result.then(()=> {
                         this.setState({
                             loadCompleted: true
