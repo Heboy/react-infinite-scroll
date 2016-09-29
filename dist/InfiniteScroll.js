@@ -102,7 +102,7 @@ var InfiniteScroll = function (_React$Component) {
                     loadCompleted: false,
                     startLoad: true
                 });
-                if (result instanceof Promise) {
+                if (typeof result.then === 'function') {
                     result.then(function () {
                         _this3.setState({
                             loadCompleted: true
@@ -130,7 +130,7 @@ var InfiniteScroll = function (_React$Component) {
                     loadCompleted: false,
                     errorMsg: ''
                 });
-                if (result instanceof Promise) {
+                if (typeof result.then === 'function') {
                     result.then(function () {
                         _this4.setState({
                             loadCompleted: true
